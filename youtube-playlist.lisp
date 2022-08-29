@@ -149,7 +149,7 @@
    (unless (clog:validp obj)
      (return))
 
-   ;; 一度 Playlist が選択されてからループを開始する
+   ;; 一度 Playlist が選択されてから処理を開始する
    (when (clog:connection-data-item obj "playlist")
      (let ((item (clog:connection-data-item obj "playing")))
        ;; JavaScript へのアクセスができない場合はループを終了する
