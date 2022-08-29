@@ -11,7 +11,7 @@
   ((title :reader title :initarg :title)
    (image-url :reader image-url :initarg :image-url)
    (video-id :reader video-id :initarg :video-id)
-   (playlist :reader playlist :initarg :playlist)
+   (playlist :accessor playlist :initarg :playlist)
    (next-item :accessor next-item :initform nil)))
 
 (defun fetch-title (url)
@@ -76,7 +76,75 @@
             (setf (clog:align-items item) "center")
             (clog:create-img item :url-src (image-url item))
             (clog:create-label item :content (title item))
-            (clog:set-on-click item #'play)))))))
+            (clog:set-on-click item #'play)
+            (setf (clog:draggablep item) t)
+            (clog:set-on-drag-start item
+                                    (lambda (obj)
+                                      (setf (clog:connection-data-item
+                                             obj "dragging-item")
+                                            obj)
+                                      nil)
+                                    :drag-data "dragging-item")
+            (clog:set-on-drag-over item (lambda (obj)
+                                          (declare (ignore obj))
+                                          nil))
+            (clog:set-on-drop
+             item
+             (lambda (obj event)
+               (when (equal (getf event :drag-data)
+                            "dragging-item")
+                 (let ((dragging-item
+                         (clog:connection-data-item
+                          obj "dragging-item")))
+                   (move-item-before dragging-item obj)))))))))))
+
+(defun remove-item (item)
+  (let ((prev (previous-item (playlist item) item)))
+    (cond
+      ((eq (first-item (playlist item)) item)
+       (setf (first-item (playlist item))
+             (next-item item)))
+      ((not (null prev))
+       (setf (next-item prev) (next-item item))))))
+
+(defun move-item-after (item item-dst)
+  (remove-item item)
+  (setf (next-item item) (next-item item-dst))
+  (setf (next-item item-dst) item)
+  (setf (playlist item) (playlist item-dst))
+  (clog:place-after item-dst item))
+
+(defun move-item-to-playlist (item playlist)
+  (let ((last (last-item playlist)))
+    (cond
+      ((null last)
+       (assert (null (first-item playlist)))
+       (remove-item item)
+       (setf (next-item item) nil)
+       (setf (first-item playlist) item)
+       (setf (playlist item) playlist)
+       (clog:place-inside-bottom-of playlist item))
+      (t (move-item-after item last)))))
+
+(defun move-item-before (item item-dst)
+  (remove-item item)
+  (let ((prev-dst (previous-item (playlist item-dst) item-dst)))
+    (if (null prev-dst)
+        (progn
+          (assert (eq item-dst (first-item (playlist item-dst))))
+          (setf (first-item (playlist item-dst)) item))
+        (setf (next-item prev-dst) item))
+    (setf (next-item item) item-dst))
+  (setf (playlist item) (playlist item-dst))
+  (clog:place-before item-dst item))
+
+(defun previous-item (playlist item)
+  (let ((x (first-item playlist)))
+    (loop :while (not (null x))
+          :when (eq item (next-item x))
+            :return (return x)
+          :do (setf x (next-item x))
+          :finally (return nil))))
 
 (defun on-playlist (obj)
   (let ((win (clog-gui:create-gui-window obj :title "Playlist")))
@@ -90,9 +158,16 @@
       (setf (clog:width input) "120px")
       (clog:set-on-drop input
                         (lambda (obj data)
-                          (declare (ignore obj))
-                          (create-item playlist
-                                       (getf data :drag-data))))
+                          (cond
+                            ((equal "dragging-item" (getf data :drag-data))
+                             (let ((dragging-item
+                                     (clog:connection-data-item obj
+                                                                "dragging-item")))
+                               (when (not (null dragging-item))
+                                 (move-item-to-playlist dragging-item
+                                                        playlist))))
+                            (t
+                             (create-item playlist (getf data :drag-data))))))
       (clog:set-on-click (clog:create-form-element form :submit :value "Add")
                          (lambda (form)
                            (let ((url (clog:name-value form "url")))
