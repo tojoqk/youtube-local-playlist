@@ -243,7 +243,7 @@
        (unless (clog:js-query obj "player")
          (return))
        (case (get-player-state obj)
-         ((ENDED)
+         ((ENDED UNSTARTED)
           (when (not (null (next-item item)))
             (play (next-item item)))))))
    (sleep 1)))
