@@ -27,7 +27,7 @@
       ("https://www\\.youtube\\.com/watch\\?v=([^&]*)" url)
     x))
 
-(defun play-item (item)
+(defmethod play ((item item))
   (setf (clog:connection-data-item item "playlist")
         (playlist item))
   (when (not (null (clog:connection-data-item item "playing")))
@@ -76,7 +76,7 @@
             (setf (clog:align-items item) "center")
             (clog:create-img item :url-src (image-url item))
             (clog:create-label item :content (title item))
-            (clog:set-on-click item #'play-item)))))))
+            (clog:set-on-click item #'play)))))))
 
 (defun on-playlist (obj)
   (let ((win (clog-gui:create-gui-window obj :title "Playlist")))
@@ -158,7 +158,7 @@
        (case (get-player-state obj)
          ((ENDED)
           (when (not (null (next-item item)))
-            (play-item (next-item item)))))))
+            (play (next-item item)))))))
    (sleep 1)))
 
 (defun on-new-window (body)
