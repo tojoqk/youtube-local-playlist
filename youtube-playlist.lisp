@@ -49,7 +49,7 @@
                      (setf x (next-item x)))
           :finally (return (reverse acc)))))
 
-(defun last-item (playlist)
+(defmethod last-item ((playlist playlist))
   (car (last (item-list playlist))))
 
 (defun create-item (playlist url)
