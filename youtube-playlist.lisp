@@ -165,7 +165,6 @@
   (clog-gui:clog-gui-initialize body)
   (clog:add-class body "w3-gray")
   (let* ((menu (clog-gui:create-gui-menu-bar body)))
-    (clog-gui:create-gui-menu-icon menu)
     (clog-gui:create-gui-menu-item menu :content "Playlist" :on-click #'on-playlist)
     ;; YouTube の iframe API の利用規約によると
     ;; 一つのページで複数のプレイヤーによる同時再生は禁止されているため
