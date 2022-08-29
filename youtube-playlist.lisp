@@ -146,16 +146,31 @@
           :do (setf x (next-item x))
           :finally (return nil))))
 
+(defun set-on-drop*-do-nothing (obj)
+  (clog:set-on-drag-over obj
+                         (lambda (obj)
+                           (declare (ignore obj))
+                           nil))
+  (clog:set-on-drop obj
+                    (lambda (obj event)
+                      (declare (ignore obj event))
+                      nil)))
+
 (defun on-playlist (obj)
   (let ((win (clog-gui:create-gui-window obj :title "Playlist")))
     (let* ((playlist (change-class (clog:create-div (clog-gui:window-content win))
                                    'playlist))
            (form (clog:create-form (clog-gui:window-content win)))
+           (label (clog:create-label form :content "URL: "))
            (input (clog:create-form-element
                    form :text
                    :name "url"
-                   :label (clog:create-label form :content "URL: "))))
+                   :label label))
+           (button (clog:create-form-element form :submit :value "Add")))
       (setf (clog:width input) "120px")
+      (set-on-drop*-do-nothing playlist)
+      (set-on-drop*-do-nothing label)
+      (set-on-drop*-do-nothing (clog-gui:window-content win))
       (clog:set-on-drop input
                         (lambda (obj data)
                           (cond
@@ -168,11 +183,12 @@
                                                         playlist))))
                             (t
                              (create-item playlist (getf data :drag-data))))))
-      (clog:set-on-click (clog:create-form-element form :submit :value "Add")
+      (clog:set-on-click button
                          (lambda (form)
                            (let ((url (clog:name-value form "url")))
                              (setf (clog:value input) "")
-                             (create-item playlist url)))))))
+                             (create-item playlist url))))
+      (set-on-drop*-do-nothing button))))
 
 (defun load-youtube-player (win)
   (clog:create-div (clog-gui:window-content win) :html-id "player")
