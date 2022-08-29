@@ -97,11 +97,7 @@
                          (lambda (form)
                            (let ((url (clog:name-value form "url")))
                              (setf (clog:value input) "")
-                             (create-item playlist url))))
-      (loop
-       (unless (clog:validp playlist)
-         (return))
-       (sleep 1)))))
+                             (create-item playlist url)))))))
 
 (defun load-youtube-player (win)
   (clog:create-div (clog-gui:window-content win) :html-id "player")
