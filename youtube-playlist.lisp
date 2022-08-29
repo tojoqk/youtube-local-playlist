@@ -41,7 +41,7 @@
                            "player.loadVideoById(\"~a\",0,\"large\")"
                            (video-id item))))
 
-(defun item-list (playlist)
+(defmethod item-list ((playlist playlist))
   (let ((x (first-item playlist))
         (acc '()))
     (loop :while (not (null x))
