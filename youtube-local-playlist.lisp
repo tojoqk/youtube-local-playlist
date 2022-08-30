@@ -1,8 +1,8 @@
-(defpackage #:youtube-playlist
+(defpackage #:youtube-local-playlist
   (:use #:cl)
   (:export start-app))
 
-(in-package :youtube-playlist)
+(in-package :youtube-local-playlist)
 
 (defclass playlist (clog:clog-panel)
   ((first-item :accessor first-item :initform nil)))
@@ -297,5 +297,5 @@
    'on-new-window
    :static-root (merge-pathnames "./www/"
 			         (asdf:system-source-directory
-                                  :youtube-playlist)))
+                                  :youtube-local-playlist)))
   (clog:open-browser))
