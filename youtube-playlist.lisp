@@ -23,9 +23,9 @@
     (error () nil)))
 
 (defun url-to-video-id (url)
-   (cl-ppcre:register-groups-bind (x)
-       ("https://[^/]*/watch\\?v=([^&]*)" url)
-     x))
+  (cl-ppcre:register-groups-bind (x)
+      ("https://[^/]*/watch\\?v=([^&]*)" url)
+    x))
 
 (defmethod play ((item item))
   (setf (clog:connection-data-item item "playlist")
@@ -193,7 +193,7 @@
 (defun load-youtube-player (win)
   (clog:create-div (clog-gui:window-content win) :html-id "player")
   (clog:create-child (clog-gui:window-content win)
-                "
+                     "
     <script>
       var tag = document.createElement('script');
       tag.src = \"https://www.youtube.com/iframe_api\";
