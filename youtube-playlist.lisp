@@ -233,26 +233,33 @@
   (setf (clog:connection-data-item obj "playlist") nil)
   (setf (clog:connection-data-item obj "playing") nil)
   (loop
-   (unless (clog:validp obj)
-     (return))
-
-   ;; 一度 Playlist が選択されてから処理を開始する
-   (when (clog:connection-data-item obj "playlist")
-     (let ((item (clog:connection-data-item obj "playing")))
-       ;; JavaScript へのアクセスができない場合はループを終了する
-       (unless (clog:js-query obj "player")
-         (return))
-       (case (get-player-state obj)
-         ((ENDED UNSTARTED)
-          (when (not (null (next-item item)))
-            (play (next-item item)))))))
-   (sleep 1)))
+    (unless (clog:validp obj)
+      (return))
+    
+    ;; 一度 Playlist が選択されてから処理を開始する
+    (when (clog:connection-data-item obj "playlist")
+      (let ((item (clog:connection-data-item obj "playing")))
+        ;; JavaScript へのアクセスができない場合はループを終了する
+        (unless (clog:js-query obj "player")
+          (return))
+        (case (get-player-state obj)
+          ((ENDED UNSTARTED)
+           (when (not (null (next-item item)))
+             (play (next-item item)))))))
+    (sleep 1)))
 
 (defun on-new-window (body)
   (clog-gui:clog-gui-initialize body)
   (clog:add-class body "w3-gray")
-  (let* ((menu (clog-gui:create-gui-menu-bar body)))
-    (clog-gui:create-gui-menu-item menu :content "Playlist" :on-click #'on-playlist)
+  (let* ((menu (clog-gui:create-gui-menu-bar body))
+         (tmp (clog-gui:create-gui-menu-icon menu :image-url "/img/icon.png"))
+         (playlist
+           (clog-gui:create-gui-menu-drop-down menu :content "Playlist")))
+    (declare (ignore tmp))
+    (clog-gui:create-gui-menu-item playlist
+                                   :content "New"
+                                   :on-click 'on-playlist)
+
     ;; YouTube の iframe API の利用規約によると
     ;; 一つのページで複数のプレイヤーによる同時再生は禁止されているため
     ;; YouTube の Window は起動時に一つだけ作成する
