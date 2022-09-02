@@ -5,7 +5,8 @@
 (in-package :youtube-local-playlist)
 
 (defclass playlist (clog:clog-panel)
-  ((first-item :accessor first-item :initform nil)))
+  ((first-item :accessor first-item :initform nil)
+   (item-area :accessor item-area)))
 
 (defclass item (clog:clog-panel)
   ((title :reader title :initarg :title)
@@ -59,7 +60,7 @@
                                         video-id))))
         (when title
           (let ((item
-                  (change-class (clog:create-div playlist)
+                  (change-class (clog:create-div (item-area playlist))
                                 'item
                                 :title
                                 (subseq title
@@ -123,7 +124,7 @@
        (setf (next-item item) nil)
        (setf (first-item playlist) item)
        (setf (playlist item) playlist)
-       (clog:place-inside-bottom-of playlist item))
+       (clog:place-inside-bottom-of (item-area playlist) item))
       (t (move-item-after item last)))))
 
 (defun move-item-before (item item-dst)
@@ -160,13 +161,15 @@
   (let ((win (clog-gui:create-gui-window obj :title "Playlist")))
     (let* ((playlist (change-class (clog:create-div (clog-gui:window-content win))
                                    'playlist))
-           (form (clog:create-form (clog-gui:window-content win)))
+           (item-area (clog:create-div playlist))
+           (form (clog:create-form playlist))
            (label (clog:create-label form :content "URL: "))
            (input (clog:create-form-element
                    form :text
                    :name "url"
                    :label label))
            (button (clog:create-form-element form :submit :value "Add")))
+      (setf (item-area playlist) item-area)
       (setf (clog:width input) "120px")
       (set-on-drop*-do-nothing playlist)
       (set-on-drop*-do-nothing label)
