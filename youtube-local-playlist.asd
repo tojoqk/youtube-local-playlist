@@ -5,8 +5,9 @@
   :author "Masaya Tojo"
   :license  "BSD"
   :version "0.0.0"
-  :serial t
-  :depends-on (#:clog #:dexador #:plump #:clss)
-  :components ((:file "youtube-local-playlist")
-               (:file "playlist")
-               (:file "item")))
+  :class :package-inferred-system
+  :depends-on (#:clog
+               #:dexador
+               #:plump
+               #:clss
+               #:youtube-local-playlist/youtube-local-playlist))

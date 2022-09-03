@@ -1,8 +1,10 @@
-(defpackage #:youtube-local-playlist
-  (:use #:cl)
+(defpackage #:youtube-local-playlist/youtube-local-playlist
+  (:nicknames #:youtube-local-playlist)
+  (:use #:cl
+        #:youtube-local-playlist/playlist)
   (:export start-app))
 
-(in-package :youtube-local-playlist)
+(in-package :youtube-local-playlist/youtube-local-playlist)
 
 (defun on-playlist (obj)
   (new-playlist obj))
@@ -75,7 +77,7 @@
                                  "Open..."
                                  (merge-pathnames "./playlist/"
 			                          (asdf:system-source-directory
-                                                   :youtube-local-playlist))
+                                                   :youtube-local-playlist/youtube-local-playlist))
                                  #'open-file)))
 
 (defun on-file-save (obj)
@@ -92,7 +94,7 @@
                                  "Save..."
                                  (merge-pathnames "./playlist/"
 			                          (asdf:system-source-directory
-                                                   :youtube-local-playlist))
+                                                   :youtube-local-playlist/youtube-local-playlist))
                                  #'save-file)))
 
 (defun on-new-window (body)
@@ -151,5 +153,5 @@
    'on-new-window
    :static-root (merge-pathnames "./www/"
 			         (asdf:system-source-directory
-                                  :youtube-local-playlist)))
+                                  :youtube-local-playlist/youtube-local-playlist)))
   (clog:open-browser))
