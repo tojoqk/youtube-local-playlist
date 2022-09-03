@@ -7,7 +7,7 @@
 (defun on-playlist (obj)
   (let ((win (clog-gui:create-gui-window obj :title "Playlist")))
     (flet ((set-on-drop*-do-nothing (obj)
-              (clog:set-on-drag-over obj (lambda (o) (declare (ignore o)) nil))
+             (clog:set-on-drag-over obj (lambda (o) (declare (ignore o)) nil))
              (clog:set-on-drop obj (lambda (o e) (declare (ignore o e)) nil))))
       (change-class (clog:create-div (clog-gui:window-content win)) 'playlist)
       (set-on-drop*-do-nothing (clog-gui:window-content win)))))
