@@ -72,6 +72,10 @@
       (let ((playlist
               (change-class (clog:create-div (clog-gui:window-content win))
                             'playlist)))
+        (clog:set-on-click (clog-gui:window-content win)
+                           (lambda (obj)
+                             (declare (ignore obj))
+                             (clog-gui:window-focus win)))
         (clog-gui:set-on-window-focus win
                                       (lambda (obj)
                                         (setf (clog:connection-data-item
