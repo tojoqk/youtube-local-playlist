@@ -2,7 +2,8 @@
   (:nicknames #:youtube-local-playlist)
   (:use #:cl
         #:youtube-local-playlist/playlist)
-  (:export start-app))
+  (:export start-app
+           serve))
 
 (in-package :youtube-local-playlist/youtube-local-playlist)
 
@@ -150,3 +151,6 @@
 (defun start-app ()
   (clog:initialize 'on-new-window)
   (clog:open-browser))
+
+(defun serve (&key (host "0.0.0.0") (port 8080))
+  (clog:initialize 'on-new-window :host host :port port))
