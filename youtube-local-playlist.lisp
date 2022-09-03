@@ -101,8 +101,7 @@
   (clog-gui:clog-gui-initialize body)
   (clog:add-class body "w3-gray")
   (let* ((menu (clog-gui:create-gui-menu-bar body))
-         (tmp (clog-gui:create-gui-menu-icon menu :image-url "/img/icon.png"
-                                                  :on-click 'on-playlist))
+         (tmp (clog-gui:create-gui-menu-icon menu :on-click 'on-playlist))
          (playlist
            (clog-gui:create-gui-menu-drop-down menu :content "File")))
     (declare (ignore tmp))
@@ -149,9 +148,5 @@
       (main-loop body))))
 
 (defun start-app ()
-  (clog:initialize
-   'on-new-window
-   :static-root (merge-pathnames "./www/"
-			         (asdf:system-source-directory
-                                  :youtube-local-playlist/youtube-local-playlist)))
+  (clog:initialize 'on-new-window)
   (clog:open-browser))
