@@ -57,15 +57,14 @@
       (return))
     
     ;; 一度 Playlist が選択されてから処理を開始する
-    (when (clog:connection-data-item obj "playlist")
-      (let ((item (clog:connection-data-item obj "playing")))
-        ;; JavaScript へのアクセスができない場合はループを終了する
-        (unless (clog:js-query obj "player")
-          (return))
-        (case (get-player-state obj)
-          ((ENDED UNSTARTED)
-           (when (not (null (next-item item)))
-             (play (next-item item)))))))
+    (let ((item (clog:connection-data-item obj "playing")))
+      (when item
+        ;; JavaScript にアクセスできる場合のみ実行する
+        (when (clog:js-query obj "player")
+          (case (get-player-state obj)
+            ((ENDED UNSTARTED)
+             (when (not (null (next-item item)))
+               (play (next-item item))))))))
     (sleep 1)))
 
 (defun on-file-open (obj)
