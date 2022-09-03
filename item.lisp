@@ -117,7 +117,7 @@
 (defun create-item (title video-id image-url playlist)
   (change-class (clog:create-div (item-area playlist))
                 'item
-                :title (subseq title 0 (- (length title) 10))
+                :title title
                 :video-id video-id
                 :image-url image-url
                 :playlist playlist))
