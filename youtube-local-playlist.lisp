@@ -5,12 +5,7 @@
 (in-package :youtube-local-playlist)
 
 (defun on-playlist (obj)
-  (let ((win (clog-gui:create-gui-window obj :title "Playlist")))
-    (flet ((set-on-drop*-do-nothing (obj)
-             (clog:set-on-drag-over obj (lambda (o) (declare (ignore o)) nil))
-             (clog:set-on-drop obj (lambda (o e) (declare (ignore o e)) nil))))
-      (change-class (clog:create-div (clog-gui:window-content win)) 'playlist)
-      (set-on-drop*-do-nothing (clog-gui:window-content win)))))
+  (new-playlist obj))
 
 (defun load-youtube-player (win)
   (clog:create-div (clog-gui:window-content win) :html-id "player")
@@ -70,6 +65,36 @@
              (play (next-item item)))))))
     (sleep 1)))
 
+(defun on-file-open (obj)
+  (flet ((open-file (filename)
+           (when filename
+             (with-open-file (s filename)
+               (let ((*read-eval* nil))
+                 (new-playlist-from-sexpr obj (read s)))))))
+    (clog-gui:server-file-dialog obj
+                                 "Open..."
+                                 (merge-pathnames "./playlist/"
+			                          (asdf:system-source-directory
+                                                   :youtube-local-playlist))
+                                 #'open-file)))
+
+(defun on-file-save (obj)
+  (flet ((save-file (filename)
+           (when filename
+             (let ((playlist
+                     (clog:connection-data-item obj "current-playlist")))
+               (print playlist)
+               (when playlist
+                 (with-open-file (s filename :direction :output
+                                             :if-exists :supersede)
+                   (write (playlist-to-sexpr playlist) :stream s)))))))
+    (clog-gui:server-file-dialog obj
+                                 "Save..."
+                                 (merge-pathnames "./playlist/"
+			                          (asdf:system-source-directory
+                                                   :youtube-local-playlist))
+                                 #'save-file)))
+
 (defun on-new-window (body)
   (clog-gui:clog-gui-initialize body)
   (clog:add-class body "w3-gray")
@@ -77,11 +102,17 @@
          (tmp (clog-gui:create-gui-menu-icon menu :image-url "/img/icon.png"
                                                   :on-click 'on-playlist))
          (playlist
-           (clog-gui:create-gui-menu-drop-down menu :content "Playlist")))
+           (clog-gui:create-gui-menu-drop-down menu :content "File")))
     (declare (ignore tmp))
     (clog-gui:create-gui-menu-item playlist
                                    :content "New"
                                    :on-click 'on-playlist)
+    (clog-gui:create-gui-menu-item playlist
+                                   :content "Open"
+                                   :on-click 'on-file-open)
+    (clog-gui:create-gui-menu-item playlist
+                                   :content "Save"
+                                   :on-click 'on-file-save)
 
     ;; YouTube の iframe API の利用規約によると
     ;; 一つのページで複数のプレイヤーによる同時再生は禁止されているため

@@ -47,3 +47,33 @@
 
 (defmethod last-item ((playlist playlist))
   (car (last (item-list playlist))))
+
+(defun playlist-to-sexpr (playlist)
+  (loop :for item :in (item-list playlist)
+        :collect (list :title (title item)
+                       :image-url (image-url item)
+                       :video-id (video-id item))))
+
+(defun new-playlist (obj)
+  (let ((win (clog-gui:create-gui-window obj :title "Playlist")))
+    (flet ((set-on-drop*-do-nothing (obj)
+             (clog:set-on-drag-over obj (lambda (o) (declare (ignore o)) nil))
+             (clog:set-on-drop obj (lambda (o e) (declare (ignore o e)) nil))))
+      (set-on-drop*-do-nothing (clog-gui:window-content win))
+      (let ((playlist
+              (change-class (clog:create-div (clog-gui:window-content win))
+                            'playlist)))
+        (clog-gui:set-on-window-focus win
+                                      (lambda (obj)
+                                        (setf (clog:connection-data-item
+                                               obj "current-playlist")
+                                              playlist)))
+        playlist))))
+
+(defun new-playlist-from-sexpr (obj sexpr)
+  (let ((playlist (new-playlist obj)))
+    (loop :for item-expr :in sexpr
+          :do (create-item (getf item-expr :title)
+                           (getf item-expr :video-id)
+                           (getf item-expr :image-url)
+                           playlist))))
