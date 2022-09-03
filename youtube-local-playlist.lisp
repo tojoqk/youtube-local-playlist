@@ -74,7 +74,8 @@
   (clog-gui:clog-gui-initialize body)
   (clog:add-class body "w3-gray")
   (let* ((menu (clog-gui:create-gui-menu-bar body))
-         (tmp (clog-gui:create-gui-menu-icon menu :image-url "/img/icon.png"))
+         (tmp (clog-gui:create-gui-menu-icon menu :image-url "/img/icon.png"
+                                                  :on-click 'on-playlist))
          (playlist
            (clog-gui:create-gui-menu-drop-down menu :content "Playlist")))
     (declare (ignore tmp))
