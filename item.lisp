@@ -50,8 +50,8 @@
     (clog:set-on-drag-over item #'item-drag-over)
     (clog:set-on-drop item #'item-drag-drop)))
 
-(defun previous-item (playlist item)
-  (let ((x (first-item playlist)))
+(defun previous-item (item)
+  (let ((x (first-item (playlist item))))
     (loop :while (not (null x))
           :when (eq item (next-item x))
             :return (return x)
@@ -60,7 +60,7 @@
 
 (defun move-item-before (item item-dst)
   (remove-item item)
-  (let ((prev-dst (previous-item (playlist item-dst) item-dst)))
+  (let ((prev-dst (previous-item item-dst)))
     (if (null prev-dst)
         (progn
           (assert (eq item-dst (first-item (playlist item-dst))))
@@ -90,7 +90,7 @@
   (clog:place-after item-dst item))
 
 (defun remove-item (item)
-  (let ((prev (previous-item (playlist item) item)))
+  (let ((prev (previous-item item)))
     (cond
       ((eq (first-item (playlist item)) item)
        (setf (first-item (playlist item))
