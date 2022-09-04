@@ -3,7 +3,8 @@
   (:use #:cl
         #:youtube-local-playlist/playlist)
   (:export start-app
-           serve))
+           serve
+           on-new-window))
 
 (in-package :youtube-local-playlist/youtube-local-playlist)
 
