@@ -235,6 +235,6 @@
           (when title
             (create-item (subseq title 0 (- (length title) 10))
                          video-id
-                         (format nil "http://img.youtube.com/vi/~a/default.jpg"
+                         (format nil "http://i.ytimg.com/vi/~a/default.jpg"
                                  video-id)
                          playlist)))))))
