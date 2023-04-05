@@ -19,9 +19,12 @@
   (let* ((item-area (clog:create-div playlist))
          (form (clog:create-form playlist))
          (label (clog:create-label form :content "URL: "))
+         (input-name (concatenate 'string
+                                  (clog:html-id item-area)
+				  "-url"))
          (input (clog:create-form-element
                  form :text
-                 :name "url"
+                 :name input-name
                  :label label))
          (button (clog:create-form-element form :submit :value "Add")))
     (flet ((set-on-drop*-do-nothing (obj)
@@ -37,7 +40,7 @@
                    (t
                     (fetch-item playlist (getf data :drag-data)))))
            (button-on-click (form)
-             (let ((url (clog:name-value form "url")))
+             (let ((url (clog:name-value form input-name)))
                (setf (clog:value input) "")
                (fetch-item playlist url))))
       (setf (item-area playlist) item-area)
